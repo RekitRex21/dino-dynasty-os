@@ -1,0 +1,51 @@
+# Dino Dynasty OS - Example Configuration
+# Copy this to config.yaml and fill in your API keys
+
+llm:
+  providers:
+    # Local Ollama (recommended for privacy)
+    - name: "ollama"
+      provider: "ollama"
+      model: "phi3"  # or llama3, mistral, etc.
+      base_url: "http://localhost:11434"
+      enabled: false  # Set to true if you have Ollama installed
+    
+    # OpenRouter (free tier available)
+    - name: "openrouter"
+      provider: "openrouter"
+      model: "anthropic/claude-3.5-sonnet"
+      api_key: "YOUR_OPENROUTER_API_KEY"
+      enabled: false
+    
+    # OpenAI (requires API key)
+    - name: "openai"
+      provider: "openai"
+      model: "gpt-4o"
+      api_key: "YOUR_OPENAI_API_KEY"
+      enabled: false
+    
+    # Anthropic (requires API key)
+    - name: "anthropic"
+      provider: "anthropic"
+      model: "claude-3.5-sonnet"
+      api_key: "YOUR_ANTHROPIC_API_KEY"
+      enabled: false
+  
+  # Default provider (used if no specific provider specified)
+  default_provider: "openrouter"
+
+# Channels (optional)
+channels:
+  telegram:
+    enabled: false
+    bot_token: "YOUR_TELEGRAM_BOT_TOKEN"
+  
+  discord:
+    enabled: false
+    bot_token: "YOUR_DISCORD_BOT_TOKEN"
+
+# Security
+security:
+  allow_code_execution: true
+  sandbox_tools: true
+  max_file_size_mb: 10

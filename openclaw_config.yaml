@@ -1,0 +1,58 @@
+# Dino Dynasty OS: OpenClaw Configuration
+# Connects OpenClaw to local Ollama models
+
+# Default LLM (can be overridden per session)
+defaults:
+  model: "ollama/phi4-mini"
+  temperature: 0.7
+  max_tokens: 4096
+
+# LLM Providers
+providers:
+  ollama:
+    base_url: "http://localhost:11434"
+    available_models:
+      - "phi4-mini"        # Main brain - 3.8B, fast, excellent reasoning
+      - "qwen2.5:7b-instruct"  # Secondary brain
+      - "nomic-embed-text"  # Embeddings only
+    
+  minimax:
+    # Keep for heavy reasoning tasks
+    model: "MiniMax-M2.1"
+    
+# Session Configurations
+sessions:
+  main:
+    model: "ollama/phi4-mini"
+    description: "Primary OpenClaw session with local phi4-mini brain"
+    
+  isolated:
+    model: "ollama/phi4-mini"
+    description: "Isolated agent sessions use local brain"
+    
+  trading:
+    model: "ollama/qwen2.5:7b-instruct"
+    description: "Trading bots use Qwen for speed"
+
+# Agent Orchestration (NanoBot Integration)
+orchestration:
+  enabled: true
+  framework: "nanobot"
+  main_brain: "phi4-mini"
+  sub_agent_model: "phi4-mini"
+  max_sub_agents: 4
+  
+# Memory & Embeddings
+memory:
+  embedding_model: "ollama/nomic-embed-text"
+  storage: "sqlite"
+  
+# Tools Configuration
+tools:
+  enabled:
+    - "python"
+    - "bash"
+    - "file_read"
+    - "file_write"
+    - "web_fetch"
+    - "web_search"
