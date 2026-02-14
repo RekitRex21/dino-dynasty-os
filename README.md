@@ -69,7 +69,7 @@ Restrict file operations to your workspace directory for security.
 sandbox:
   enabled: true
   restrictToWorkspace: true
-  workspace_path: "C:\\Users\\rexdu\\.openclaw\\workspace"
+  workspace_path: "."
 ```
 
 ### Channel Plugins
@@ -328,7 +328,7 @@ llm:
 sandbox:
   enabled: true
   restrictToWorkspace: true
-  workspace_path: "C:\\Users\\rexdu\\.openclaw\\workspace"
+  workspace_path: "."
 
 # Channel Plugins
 channels:
