@@ -32,23 +32,27 @@ from dino_os.scheduler import Scheduler
 
 console = Console()
 
+DINOSAUR_ART = """
+                       __
+                      / _)
+                     / /
+           __   __  / /      ___   _   __
+          / _\ / _ \/ /_    / _ \ | | / /
+         / // // __/ __ \  / // / | |/ /
+        /____/ \___/_/ |_| /____/  |___/
+"""
+
 BANNER = """
 ╔══════════════════════════════════════════════════════════════════╗
-║                                                                  ║
-║      /\\__     /\\__     /\\__     /\\__     /\\__               ║
-║     /\\__\\   /\\__\\   /\\__\\   /\\__\\   /\\__\\               ║
-║    / /  \\  / /  \\  / /  \\  / /  \\  / /  \\               ║
-║    \\/    \\ \\/    \\ \\/    \\ \\/    \\ \\/    \\               ║
-║                                                                  ║
-║              D I N O   D Y N A S T Y   O S                     ║
-║                    Lightning Fast | Secure | Smart               ║
-║                                                                  ║
+║  D I N O   D Y N A S T Y   O S                                ║
+║  Lightning Fast | Secure | Smart                                ║
 ╚══════════════════════════════════════════════════════════════════╝
 """
 
 
 def print_banner():
     console.print("\n")
+    console.print(DINOSAUR_ART, style="bold green")
     console.print(BANNER, style="bold cyan")
     console.print("\n")
 
