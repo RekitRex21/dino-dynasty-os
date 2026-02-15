@@ -6,6 +6,7 @@ A rich CLI dashboard with ASCII art and colors.
 
 import sys
 import os
+import shutil
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -32,14 +33,19 @@ from dino_os.scheduler import Scheduler
 
 console = Console()
 
+# Get terminal size for dynamic width
+def get_terminal_size():
+    cols, rows = shutil.get_terminal_size()
+    return int(cols * 0.8), rows - 15
+
 DINOSAUR_ART = """
                        __
                       / _)
                      / /
            __   __  / /      ___   _   __
-          / _\ / _ \/ /_    / _ \ | | / /
-         / // // __/ __ \  / // / | |/ /
-        /____/ \___/_/ |_| /____/  |___/
+          / _\\ / _ \\/ /_    / _ \\ | | / /
+         / // // __/ __ \\  / // / | |/ /
+        /____/ \\___/_/ |_| /____/  |___/
 """
 
 BANNER = """
@@ -129,11 +135,61 @@ def memory_menu():
             console.print(f"Deleted: {k}")
 
 
+def ascii_art_menu():
+    """ASCII Art Generator - matches Dino aesthetic"""
+    from PIL import Image, ImageEnhance
+    
+    while True:
+        choice = questionary.select(
+            "ASCII Art Generator",
+            choices=["Generate from image", "Set width", "Set contrast", "Back"]
+        ).ask()
+        
+        if choice == "Back": break
+        elif choice == "Generate from image":
+            path = questionary.text("Image path:").ask()
+            if path and os.path.exists(path):
+                try:
+                    # Dynamic width calculation
+                    width, height = get_terminal_size()
+                    
+                    # Dino aesthetic ramp
+                    ascii_chars = "MW#Nxo:. "
+                    
+                    # Process image
+                    img = Image.open(path)
+                    aspect = img.height / img.width
+                    new_height = int(width * aspect * 0.55)
+                    new_height = min(new_height, height)  # Limit height
+                    img = img.resize((width, new_height))
+                    img = img.convert("L")
+                    
+                    # Contrast boost for Dino look
+                    enhancer = ImageEnhance.Contrast(img)
+                    img = enhancer.enhance(1.3)
+                    
+                    pixels = img.getdata()
+                    bucket = 255 / (len(ascii_chars) - 1)
+                    ascii_str = "".join(ascii_chars[int(p // bucket)] for p in pixels)
+                    
+                    lines = [ascii_str[i:i+width] for i in range(0, len(ascii_str), width)]
+                    
+                    console.print("\n\033[32m" + "\n".join(lines) + "\033[0m\n")
+                except Exception as e:
+                    console.print(f"Error: {e}")
+            else:
+                console.print("File not found")
+        elif choice == "Set width":
+            console.print("Width is automatically calculated based on terminal size")
+        elif choice == "Set contrast":
+            console.print("Contrast is auto-boosted to 1.3 for Dino aesthetic")
+
+
 def main_menu():
     while True:
         choice = questionary.select(
             "Dino Dynasty OS",
-            choices=["Show Status", "List Agents", "Run Agent", "Memory Manager", "Exit"]
+            choices=["Show Status", "List Agents", "Run Agent", "Memory Manager", "ASCII Art", "Exit"]
         ).ask()
         
         if choice == "Show Status":
@@ -152,6 +208,8 @@ def main_menu():
             if agent: run_agent(agent)
         elif choice == "Memory Manager":
             memory_menu()
+        elif choice == "ASCII Art":
+            ascii_art_menu()
         elif choice == "Exit":
             console.print("\nBye!\n")
             break
