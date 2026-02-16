@@ -69,9 +69,8 @@ def print_banner():
 
 
 def show_status():
-    config = Config()
     memory = MemoryLayer()
-    scheduler = Scheduler(config)
+    scheduler = Scheduler()
     memory_entries = len(memory.list())
     jobs = scheduler.list_jobs()
     
