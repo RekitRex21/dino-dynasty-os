@@ -48,18 +48,17 @@ DINOSAUR_ART = """
         ╚═════╝ ╚══════╝  ╚═══╝  
 """
 
+BANNER = """
+╔══════════════════════════════════════════════════════════════════════════╗
+║ 🦖 D I N O   D Y N A S T Y   O S 🦖                                      ║
+║ ⚡ Lightning Fast | 🔒 Secure | 🧠 Intelligent                           ║
+╚══════════════════════════════════════════════════════════════════════════╝
+"""
+
 def print_banner():
     console.print("\n")
     console.print(DINOSAUR_ART, style="bold cyan")
-    
-    # Use Rich Panel for proper alignment
-    title_text = Text("🦖 D I N O   D Y N A S T Y   O S 🦖", style="bold green", justify="center")
-    subtitle_text = Text("⚡ Lightning Fast | 🔒 Secure | 🧠 Intelligent", style="bold yellow", justify="center")
-    banner_body = Text()
-    banner_body.append_text(title_text)
-    banner_body.append("\n")
-    banner_body.append_text(subtitle_text)
-    console.print(Panel(banner_body, box=box.DOUBLE, border_style="green", padding=(1, 2)))
+    console.print(BANNER, style="bold green")
     console.print("\n")
 
 
