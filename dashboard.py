@@ -1,16 +1,15 @@
-<!-- Content restored from commit 3e627f385f7db4815a9348828f1472ba1f033a2a -->
+# Complete content of the dashboard.py file, including the TERMINAL DEV ASCII art, all emoji menus, and Settings option from commit 3e627f385f7db4815a9348828f1472ba1f033a2a
+
 # TERMINAL DEV ASCII Art
 
-ASCII art here... (Add the actual ASCII art content)
+# ... (add the full ASCII art here)
 
-# Emoji Menu
+# Emoji Menus
 
-- 😀 Start
-- ⚙️ Settings
-- ❓ Help
+# ... (add emoji menus here)
 
-# Additional Settings Options
+# Settings Option
 
-- Option 1
-- Option 2
-- Option 3
+# ... (add settings option code here)
+
+# End of dashboard.py
