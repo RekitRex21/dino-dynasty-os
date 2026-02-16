@@ -178,7 +178,7 @@ class Scheduler:
                     # Schedule next run
                     if job.schedule_type == ScheduleType.INTERVAL:
                         interval = int(job.schedule)
-                        job.next_run = now.replace(microsecond=0)
+                        job.next_run = now + timedelta(seconds=interval)
                     elif job.schedule_type == ScheduleType.ONCE:
                         self._jobs.pop(job_id, None)
                         continue

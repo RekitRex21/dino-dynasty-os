@@ -1,4 +1,4 @@
-from dino_os import Agent
+from dino_os.agent_core import Agent
 
 
 class HelloAgent(Agent):

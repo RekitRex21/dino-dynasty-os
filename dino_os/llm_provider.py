@@ -27,9 +27,9 @@ class BaseLLMProvider(ABC):
         """Initialize provider with config.
         
         Args:
-            config: Provider configuration dict self.config = config.
+            config: Provider configuration dict.
         """
-       
+        self.config = config
         self.model = config.get('model', 'default')
         self.temperature = config.get('temperature', 0.7)
         self.max_tokens = config.get('max_tokens', 4096)

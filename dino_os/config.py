@@ -17,8 +17,10 @@ class Config:
             config_path: Path to config.yaml file. Defaults to project root.
         """
         if config_path is None:
-            config_path = Path(__file__).parent.parent / "config.yaml"
-        self.config_path = Path(config_path)
+            default_path = Path(__file__).parent.parent / "config.yaml"
+            self.config_path = default_path
+        else:
+            self.config_path = Path(config_path)
         self._config: Dict[str, Any] = {}
         self.load()
 
@@ -145,10 +147,10 @@ class Config:
         return self.get(f'channels.{channel}', {})
 
     def is_channel_enabled(self, channel: str) -> bool:
-        """Check if a channel is enabled:
-            channel:.
+        """Check if a channel is enabled.
         
-        Args Channel name
+        Args:
+            channel: Channel name.
             
         Returns:
             True if enabled.

@@ -68,7 +68,7 @@ def print_banner():
 def show_status():
     memory = MemoryLayer()
     scheduler = Scheduler()
-    memory_entries = len(memory.list())
+    memory_entries = memory.count()
     jobs = scheduler.list_jobs()
     
     table = Table(title="📊 System Status", box=box.ROUNDED)
@@ -103,21 +103,58 @@ def list_agents():
 
 def run_agent(name):
     console.print(f"\n[bold cyan]Running agent: {name}[/bold cyan]\n")
-    config = Config()
-    agent = Agent(name, config)
-    result = agent.run()
-    if result.get("status") == "success":
-        console.print(Panel(
-            f"✅ [green]Agent completed successfully![/green]\n{result.get('output', '')}",
-            title=f"🎉 {name}",
-            border_style="green"
-        ))
-    else:
-        console.print(Panel(
-            f"❌ [red]Agent failed![/red]\n{result.get('error', 'Unknown error')}",
-            title=f"🚫 {name}",
-            border_style="red"
-        ))
+    
+    # Load agent from skills directory
+    import importlib.util
+    skills_dir = Path(__file__).parent / "skills"
+    agent_file = skills_dir / f"{name}_agent.py"
+    
+    if not agent_file.exists():
+        console.print(f"[red]Agent file not found: {agent_file}[/red]")
+        return
+    
+    try:
+        spec = importlib.util.spec_from_file_location(f"{name}_agent", agent_file)
+        if spec is None or spec.loader is None:
+            console.print(f"[red]Could not load agent module: {name}[/red]")
+            return
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        # Find the Agent subclass
+        agent_class = None
+        for attr_name in dir(module):
+            attr = getattr(module, attr_name)
+            if (isinstance(attr, type) and 
+                hasattr(attr, '__bases__') and
+                any(base.__name__ == 'Agent' for base in attr.__mro__ if base.__name__ != 'Agent')):
+                agent_class = attr
+                break
+        
+        if agent_class is None:
+            console.print(f"[red]No Agent subclass found in {name}[/red]")
+            return
+        
+        agent = agent_class()
+        
+        # Run the async agent
+        import asyncio
+        result = asyncio.get_event_loop().run_until_complete(agent.run())
+        
+        if result.get("status") == "success":
+            console.print(Panel(
+                f"✅ [green]Agent completed successfully![/green]\n{result.get('output', '')}",
+                title=f"🎉 {name}",
+                border_style="green"
+            ))
+        else:
+            console.print(Panel(
+                f"❌ [red]Agent failed![/red]\n{result.get('error', 'Unknown error')}",
+                title=f"🚫 {name}",
+                border_style="red"
+            ))
+    except Exception as e:
+        console.print(f"[red]Error running agent: {e}[/red]")
 
 
 def memory_menu():
@@ -130,13 +167,15 @@ def memory_menu():
         if choice == "← Back to main menu":
             break
         elif choice == "List all memories":
-            entries = memory.list()
-            if entries:
+            keys = memory.list_keys()
+            if keys:
                 table = Table(title="💾 Memory Entries", box=box.ROUNDED)
                 table.add_column("Key", style="cyan")
                 table.add_column("Value", style="green")
-                for k, v in entries.items():
-                    table.add_row(k, str(v)[:50])
+                for key in keys:
+                    entry = memory.get(key)
+                    if entry:
+                        table.add_row(key, str(entry['value'])[:50])
                 console.print(table)
             else:
                 console.print("[yellow]No memory entries![/yellow]")
