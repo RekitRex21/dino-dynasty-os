@@ -38,6 +38,81 @@ python dashboard.py
 # - 🧠 Memory Manager
 ```
 
+## 🤖 All 8 Agents
+
+### **Manual Agents** (Run on demand)
+
+| Agent | Command | Description |
+|-------|---------|-------------|
+| `hello` | `python cli.py run hello` | Demo agent - says hello |
+| `coder` | Interactive | Reads/writes code files |
+| `writer` | Interactive | Creates text content & markdown |
+| `websearch` | Interactive | Searches DuckDuckGo for info |
+| `computer` | Interactive | Controls mouse, keyboard, screenshots |
+
+### **Autonomous Agents** (Run 24/7)
+
+| Agent | Command | Check Interval | What It Does |
+|-------|---------|----------------|--------------|
+| `autocoder` | `python skills/autonomous_coder_agent.py` | Every 60s | Watches code, auto-implements TODOs |
+| `autoresearcher` | `python skills/autonomous_researcher_agent.py` | Every 5min | Monitors topics, summarizes news |
+| `autotester` | `python skills/autonomous_tester_agent.py` | Every 30s | Detects code changes, runs tests |
+
+## 🚀 Autonomous Mode
+
+### **autocoder** - Auto-Implements TODOs
+```bash
+python skills/autonomous_coder_agent.py
+```
+- 🔄 Runs continuously (checks every 60 seconds)
+- 👀 Watches code for TODO/FIXME/XXX/HACK comments
+- 🔨 Automatically implements them with appropriate code
+- 📝 Logs all actions to `logs/autocoder_actions.log`
+
+**Usage:**
+```python
+# Add to any Python file:
+# TODO: Add error handling here
+
+# The agent will automatically:
+# 1. Detect the TODO
+# 2. Generate implementation
+# 3. Insert into file
+# 4. Log the action
+```
+
+### **autoresearcher** - Monitors & Summarizes News
+```bash
+python skills/autonomous_researcher_agent.py
+```
+- 🔄 Runs continuously (checks every 5 minutes)
+- 🔍 Searches the web for watched topics
+- 📝 Generates summaries automatically
+- 🚨 Alerts on significant news
+- 💾 Stores results in memory
+
+**Add topics to monitor:**
+```python
+agent.add_topic("Artificial Intelligence")
+agent.add_topic("Python Programming")
+```
+
+### **autotester** - Auto-Runs Tests on Changes
+```bash
+python skills/autonomous_tester_agent.py
+```
+- 🔄 Runs continuously (checks every 30 seconds)
+- 👀 Monitors files for changes
+- 🧪 Auto-runs related tests
+- 📊 Reports pass/fail status
+- 💾 Stores test history
+
+**The agent will:**
+- Detect when you save a file
+- Find related test files
+- Run pytest or unittest
+- Show results immediately
+
 ## ✨ New Features
 
 ### Multi-Provider Fallback
@@ -113,22 +188,31 @@ Dino Dynasty OS is a standalone AI operating system inspired by the NanoBot/MCP 
 ## 📁 Project Structure
 
 ```
-dino_dynasty_os/
-├── dino_os/                 # Main package
-│   ├── __init__.py         # Package initialization
-│   ├── agent_core.py       # Agent runner and LLM integration
-│   ├── config.py           # YAML configuration management
-│   ├── memory_layer.py     # SQLite-backed semantic memory
-│   ├── message_bus.py      # Inter-agent pub/sub messaging
-│   ├── scheduler.py        # Cron-style job scheduler
-│   ├── security_gateway.py # API keys and permissions
-│   └── tool_sandbox.py     # Isolated tool execution
-├── skills/                  # Agent skills and tools
-├── tests/                   # Test suite
+dino-dynasty-os/
+├── dino_os/                 # Core OS modules
+│   ├── agent_core.py       # Agent system with async support
+│   ├── memory_layer.py     # Persistent memory
+│   ├── scheduler.py        # Job scheduling
+│   ├── llm_provider.py     # Multi-provider LLM
+│   ├── tool_sandbox.py     # Isolated execution
+│   ├── security_gateway.py # API key management
+│   └── channels.py         # Messaging integrations
+├── skills/                  # All agents
+│   ├── hello_agent.py
+│   ├── coder_agent.py
+│   ├── writer_agent.py
+│   ├── websearch_agent.py
+│   ├── computer_use_agent.py
+│   ├── autonomous_coder_agent.py      # 24/7 autonomous
+│   ├── autonomous_researcher_agent.py # 24/7 autonomous
+│   └── autonomous_tester_agent.py     # 24/7 autonomous
+├── channels/                # Discord, Telegram, WhatsApp
+├── logs/                    # Autonomous agent logs
+├── screenshots/             # Computer agent screenshots
 ├── cli.py                   # CLI entry point
+├── dashboard.py             # Interactive TUI
 ├── config.yaml              # System configuration
-├── requirements.txt         # Python dependencies
-└── README.md               # This file
+└── requirements.txt         # Dependencies
 ```
 
 ## 🧠 Agent System
@@ -446,12 +530,56 @@ python -m pytest tests/test_agent_core.py
 python -m pytest tests/ --cov=dino_os
 ```
 
-## 🛡️ Security Best Practices
+## 💻 Computer Control Agent
+
+The `computer` agent provides full desktop automation:
+
+```python
+from skills.computer_use_agent import ComputerUseAgent
+
+agent = ComputerUseAgent()
+
+# Screenshots
+agent.take_screenshot()  # Saves to screenshots/
+
+# Mouse control
+agent.move_mouse(500, 300)
+agent.click_mouse()
+agent.scroll(-3, 500, 300)
+
+# Keyboard control
+agent.type_text("Hello World!")
+agent.press_key("enter")
+agent.press_key("ctrl+c")  # Hotkeys
+
+# Screen info
+size = agent.get_screen_size()
+position = agent.get_mouse_position()
+```
+
+### Installation
+```bash
+pip install -r skills/computer_use_requirements.txt
+```
+
+## 🛡️ Safety Features
+
+- ✅ **All computer actions logged** to `logs/computer_use_YYYYMMDD.log`
+- ✅ **Dangerous text blocked** (sudo, rm -rf, passwords)
+- ✅ **Workspace sandboxing** - Files restricted to workspace
+- ✅ **API key validation** with hashing
+- ✅ **Rate limiting** on all operations
+- ✅ **Failsafe** - Move mouse to corner = emergency stop
+- ✅ **Autonomous action logging** - Every agent action recorded
+- ✅ **Continuous operation** - Agents run 24/7 with full logging
+
+### Security Best Practices
 
 1. **Never commit API keys** - Use environment variables
 2. **Sandbox all tools** - Never execute untrusted code directly
 3. **Audit everything** - Enable security gateway logging
 4. **Limit permissions** - Use least-privilege principle
+5. **Review autonomous logs** - Check logs/ directory regularly
 
 ## 📖 Developer Guide
 
@@ -471,12 +599,63 @@ For detailed architecture, API reference, and advanced usage, see:
 
 MIT License - see LICENSE file for details.
 
+## 🎯 Use Cases
+
+### 1. **Auto-Implement All TODOs**
+```bash
+python skills/autonomous_coder_agent.py
+# Add # TODO: comments to any file
+# The agent will implement them automatically
+```
+
+### 2. **Research AI News Continuously**
+```bash
+python skills/autonomous_researcher_agent.py
+# Monitors topics and alerts on significant news
+```
+
+### 3. **Auto-Test on Every Save**
+```bash
+python skills/autonomous_tester_agent.py
+# Detects file changes and runs tests automatically
+```
+
+### 4. **Control Your Computer**
+```python
+from skills.computer_use_agent import ComputerUseAgent
+agent = ComputerUseAgent()
+agent.take_screenshot()
+agent.type_text("Hello")
+```
+
+### 5. **Search & Research**
+```python
+from skills.websearch_agent import WebSearchAgent
+result = await WebSearchAgent().run("Python best practices")
+print(result['output'])
+```
+
+### 6. **Write Code Automatically**
+```python
+from skills.coder_agent import CoderAgent
+agent = CoderAgent()
+agent.write_file("script.py", "print('Hello')")
+```
+
 ## 🦖 About
 
-Dino Dynasty OS was built to create a standalone AI operating system that:
-- Runs locally with fast inference
-- Provides robust memory and scheduling
-- Maintains security and isolation
-- Integrates seamlessly with existing Python projects
+**Dino Dynasty OS** is a fully autonomous AI operating system that:
+- 🤖 Runs 24/7 without human input
+- 🧠 Makes decisions and takes actions autonomously
+- 💾 Remembers and learns from past actions
+- 🌐 Searches and monitors the web continuously
+- 💻 Controls your computer (mouse, keyboard, screenshots)
+- 📝 Writes and edits code automatically
+- 🧪 Tests code continuously
+- 🛡️ Stays secure with comprehensive safety controls
+- 📱 Integrates with messaging platforms
+- ⚡ Provides fast local LLM inference
+
+**A complete autonomous AI framework with 8 agents, persistent memory, job scheduling, and full computer control.**
 
 **Built by Rex, for Rex.** 🦖👑
