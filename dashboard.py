@@ -34,7 +34,7 @@ from dino_os.scheduler import Scheduler
 
 console = Console()
 
-INNER_WIDTH = 74  # Width inside the box borders
+INNER_WIDTH = 74
 
 # ASCII Art
 DINOSAUR_ART = """
@@ -52,17 +52,16 @@ DINOSAUR_ART = """
         ╚═════╝ ╚══════╝  ╚═══╝  
 """
 
-BANNER = f"""
-╔{"═" * (INNER_WIDTH + 2)}╗
-║ {"🦖 D I N O   D Y N A S T Y   O S 🦖".ljust(INNER_WIDTH)}║
-║ {"═" * 38.ljust(INNER_WIDTH)}║
-║ {"⚡ Lightning Fast | 🔒 Secure | 🧠 Intelligent".ljust(INNER_WIDTH)}║
-╚{"═" * (INNER_WIDTH + 2)}╝
+BANNER = """
+╔══════════════════════════════════════════════════════════════════════════╗
+║ 🦖 D I N O   D Y N A S T Y   O S 🦖                               ║
+║ ═══════════════════════════════════════════════════════════════════════ ║
+║ ⚡ Lightning Fast | 🔒 Secure | 🧠 Intelligent                      ║
+╚══════════════════════════════════════════════════════════════════════════╝
 """
 
 
 def print_banner():
-    """Print the ASCII art banner."""
     console.print("\n")
     console.print(DINOSAUR_ART, style="bold cyan")
     console.print(BANNER, style="bold green")
@@ -70,11 +69,9 @@ def print_banner():
 
 
 def show_status():
-    """Show system status."""
     config = Config()
     memory = MemoryLayer(config)
     scheduler = Scheduler(config)
-    
     memory_entries = len(memory.list())
     jobs = scheduler.list_jobs()
     
@@ -82,49 +79,37 @@ def show_status():
     table.add_column("Component", style="cyan", no_wrap=True)
     table.add_column("Status", style="green")
     table.add_column("Details", style="yellow")
-    
     table.add_row("🧠 Memory", "✅ Active", f"{memory_entries} entries")
     table.add_row("📅 Scheduler", "✅ Active", f"{len(jobs)} jobs")
     table.add_row("🐍 Python", "✅ Running", f"{sys.version.split()[0]}")
     table.add_row("📁 Working Dir", "✅ Set", os.getcwd())
-    
     console.print(table)
 
 
 def list_agents():
-    """List available agents."""
     agents_dir = Path(__file__).parent / "skills"
-    
     if not agents_dir.exists():
         console.print("[red]No skills folder found![/red]")
         return
-    
     agents = []
     for f in agents_dir.glob("*.py"):
         if f.stem != "__init__":
             agents.append(f.stem)
-    
     table = Table(title="🎯 Available Agents", box=box.ROUNDED)
     table.add_column("Agent Name", style="cyan")
     table.add_column("Description", style="green")
-    
     for agent in sorted(agents):
         table.add_row(f"🤖 {agent}", "Custom agent")
-    
     if not agents:
         table.add_row("hello", "Default hello agent")
-    
     console.print(table)
 
 
 def run_agent(name):
-    """Run an agent."""
     console.print(f"\n[bold cyan]Running agent: {name}[/bold cyan]\n")
-    
     config = Config()
     agent = Agent(name, config)
     result = agent.run()
-    
     if result.get("status") == "success":
         console.print(Panel(
             f"✅ [green]Agent completed successfully![/green]\n{result.get('output', '')}",
@@ -140,22 +125,13 @@ def run_agent(name):
 
 
 def memory_menu():
-    """Memory management menu."""
     config = Config()
     memory = MemoryLayer(config)
-    
     while True:
         choice = questionary.select(
             "🧠 Memory Menu",
-            choices=[
-                "List all memories",
-                "Add a memory",
-                "Get a memory",
-                "Delete a memory",
-                "← Back to main menu"
-            ]
+            choices=["List all memories", "Add a memory", "Get a memory", "Delete a memory", "← Back to main menu"]
         ).ask()
-        
         if choice == "← Back to main menu":
             break
         elif choice == "List all memories":
@@ -188,20 +164,11 @@ def memory_menu():
 
 
 def main_menu():
-    """Main dashboard menu."""
     while True:
         choice = questionary.select(
             "🦖 Dino Dynasty OS - Main Menu",
-            choices=[
-                "📊 Show Status",
-                "🎯 List Agents",
-                "▶️ Run Agent",
-                "🧠 Memory Manager",
-                "⚙️ Settings",
-                "🚪 Exit"
-            ]
+            choices=["📊 Show Status", "🎯 List Agents", "▶️ Run Agent", "🧠 Memory Manager", "⚙️ Settings", "🚪 Exit"]
         ).ask()
-        
         if choice == "📊 Show Status":
             print_banner()
             show_status()
@@ -214,7 +181,6 @@ def main_menu():
                 for f in skills_dir.glob("*.py"):
                     if f.stem != "__init__":
                         agents.append(f.stem)
-            
             agent = questionary.select("Select agent:", choices=agents).ask()
             if agent:
                 run_agent(agent)
