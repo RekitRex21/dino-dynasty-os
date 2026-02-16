@@ -122,12 +122,13 @@ def run_agent(name):
         spec.loader.exec_module(module)
         
         # Find the Agent subclass
+        from dino_os.agent_core import Agent as BaseAgent
         agent_class = None
         for attr_name in dir(module):
             attr = getattr(module, attr_name)
             if (isinstance(attr, type) and 
-                hasattr(attr, '__bases__') and
-                any(base.__name__ == 'Agent' for base in attr.__mro__ if base.__name__ != 'Agent')):
+                issubclass(attr, BaseAgent) and 
+                attr is not BaseAgent):
                 agent_class = attr
                 break
         
