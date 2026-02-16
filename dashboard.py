@@ -107,7 +107,12 @@ def run_agent(name):
     # Load agent from skills directory
     import importlib.util
     skills_dir = Path(__file__).parent / "skills"
-    agent_file = skills_dir / f"{name}_agent.py"
+    # Look for agent file (name.py or name_agent.py)
+    agent_file = skills_dir / f"{name}.py"
+    if not agent_file.exists():
+        agent_file = skills_dir / f"{name}_agent.py"
+    if not agent_file.exists():
+        agent_file = skills_dir / f"hello_agent.py"  # fallback
     
     if not agent_file.exists():
         console.print(f"[red]Agent file not found: {agent_file}[/red]")
