@@ -1,6 +1,6 @@
 # Dino Dynasty OS: Foundation
 
-A standalone AI operating system written in Python. Built for speed, security, and extensibility.
+**4,159 lines of Python** - Lightweight AI operating system written in Python. Built for speed, security, and extensibility.
 
 ## 🚀 Quick Start
 
