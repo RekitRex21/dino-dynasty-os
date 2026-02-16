@@ -70,7 +70,7 @@ def print_banner():
 
 def show_status():
     config = Config()
-    memory = MemoryLayer(config)
+    memory = MemoryLayer()
     scheduler = Scheduler(config)
     memory_entries = len(memory.list())
     jobs = scheduler.list_jobs()
@@ -125,8 +125,7 @@ def run_agent(name):
 
 
 def memory_menu():
-    config = Config()
-    memory = MemoryLayer(config)
+    memory = MemoryLayer()
     while True:
         choice = questionary.select(
             "🧠 Memory Menu",
