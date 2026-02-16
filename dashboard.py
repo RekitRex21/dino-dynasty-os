@@ -73,11 +73,13 @@ def show_status():
 
 def list_agents():
     skills_dir = Path(__file__).parent / "skills"
-    agents = ["hello"]
+    agents = []
     if skills_dir.exists():
-        for f in skills_dir.glob("*.py"):
+        for f in skills_dir.glob("*_agent.py"):
             if f.stem != "__init__":
-                agents.append(f.stem)
+                # Extract agent name without _agent suffix
+                agent_name = f.stem.replace("_agent", "")
+                agents.append(agent_name)
     
     table = Table(title="Available Agents", box=box.ROUNDED)
     table.add_column("Agent", style="cyan")
@@ -91,9 +93,9 @@ def run_agent(name):
     skills_dir = Path(__file__).parent / "skills"
     
     # Look for agent file
-    agent_file = skills_dir / f"{name}.py"
+    agent_file = skills_dir / f"{name}_agent.py"
     if not agent_file.exists():
-        agent_file = skills_dir / f"{name}_agent.py"
+        agent_file = skills_dir / f"{name}.py"
     
     if not agent_file.exists():
         console.print(f"[red]Agent file not found: {agent_file}[/red]")
@@ -101,6 +103,9 @@ def run_agent(name):
     
     try:
         spec = importlib.util.spec_from_file_location("agent_module", agent_file)
+        if spec is None or spec.loader is None:
+            console.print(f"[red]Could not load agent module: {agent_file}[/red]")
+            return
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         
@@ -148,8 +153,14 @@ def memory_menu():
         
         if choice == "Back": break
         elif choice == "List memories":
-            entries = memory.list()
-            for k, v in entries.items(): console.print(f"  {k}: {v}")
+            keys = memory.list_keys()
+            if keys:
+                for key in keys:
+                    entry = memory.get(key)
+                    if entry:
+                        console.print(f"  {key}: {entry['value']}")
+            else:
+                console.print("[yellow]No memories found[/yellow]")
         elif choice == "Add memory":
             k = questionary.text("Key:").ask()
             v = questionary.text("Value:").ask()
@@ -157,7 +168,13 @@ def memory_menu():
             console.print(f"✅ Added: {k}")
         elif choice == "Get memory":
             k = questionary.text("Key:").ask()
-            console.print(memory.get(k, "Not found"))
+            result = memory.get(k)
+            if result:
+                console.print(f"Key: {result['key']}")
+                console.print(f"Value: {result['value']}")
+                console.print(f"Created: {result['created_at']}")
+            else:
+                console.print("[yellow]Not found[/yellow]")
         elif choice == "Delete memory":
             k = questionary.text("Key:").ask()
             memory.delete(k)
@@ -271,13 +288,17 @@ def main_menu():
         elif choice == "🎯 List Agents":
             list_agents()
         elif choice == "▶️ Run Agent":
-            agents = ["hello"]
+            agents = []
             skills_dir = Path(__file__).parent / "skills"
             if skills_dir.exists():
-                for f in skills_dir.glob("*.py"):
+                for f in skills_dir.glob("*_agent.py"):
                     if f.stem != "__init__":
-                        agents.append(f.stem)
-            agent = questionary.select("Select:", choices=list(set(agents))).ask()
+                        agent_name = f.stem.replace("_agent", "")
+                        agents.append(agent_name)
+            if not agents:
+                console.print("[yellow]No agents found in skills directory[/yellow]")
+                continue
+            agent = questionary.select("Select:", choices=sorted(set(agents))).ask()
             if agent: run_agent(agent)
         elif choice == "🔨 BUILD Agent (full dev)":
             run_build_agent()
