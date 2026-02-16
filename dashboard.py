@@ -34,7 +34,7 @@ from dino_os.scheduler import Scheduler
 
 console = Console()
 
-INNER_WIDTH = 74
+
 
 # ASCII Art
 DINOSAUR_ART = """
@@ -52,19 +52,16 @@ DINOSAUR_ART = """
         ╚═════╝ ╚══════╝  ╚═══╝  
 """
 
-BANNER = """
-╔══════════════════════════════════════════════════════════════════════════╗
-║ 🦖 D I N O   D Y N A S T Y   O S 🦖                               ║
-║ ═══════════════════════════════════════════════════════════════════════ ║
-║ ⚡ Lightning Fast | 🔒 Secure | 🧠 Intelligent                      ║
-╚══════════════════════════════════════════════════════════════════════════╝
-"""
-
-
 def print_banner():
     console.print("\n")
     console.print(DINOSAUR_ART, style="bold cyan")
-    console.print(BANNER, style="bold green")
+    title_text = Text("🦖 D I N O   D Y N A S T Y   O S 🦖", style="bold green", justify="center")
+    sub_text = Text("⚡ Lightning Fast | 🔒 Secure | 🧠 Intelligent", style="bold yellow", justify="center")
+    banner_body = Text()
+    banner_body.append_text(title_text)
+    banner_body.append("\n")
+    banner_body.append_text(sub_text)
+    console.print(Panel(banner_body, box=box.DOUBLE, border_style="green", padding=(1, 2)))
     console.print("\n")
 
 
