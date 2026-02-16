@@ -14,19 +14,28 @@ venv\Scripts\activate  # Windows
 # Install dependencies
 pip install -r requirements.txt
 
-# Run your first agent
+# Run CLI
 python cli.py run hello
-
-# List available agents
 python cli.py list
-
-# Check system status
 python cli.py status
 
-# Memory operations
-python cli.py memory add my_key "my value"
-python cli.py memory get my_key
-python cli.py memory list
+# OR run the interactive dashboard (recommended!)
+python dashboard.py
+```
+
+## 🎨 Interactive Dashboard
+
+```bash
+# Start the TUI dashboard
+python dashboard.py
+
+# Features:
+# - 📊 Show Status
+# - 🎯 List Agents
+# - ▶️ Run Agent
+# - 🔨 BUILD Agent (full dev access)
+# - 📋 PLAN Agent (read-only analysis)
+# - 🧠 Memory Manager
 ```
 
 ## ✨ New Features
