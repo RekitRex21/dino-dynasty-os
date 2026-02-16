@@ -140,7 +140,7 @@ def run_agent(name):
         
         # Run the async agent
         import asyncio
-        result = asyncio.get_event_loop().run_until_complete(agent.run())
+        result = asyncio.run(agent.run())
         
         if result.get("status") == "success":
             console.print(Panel(
